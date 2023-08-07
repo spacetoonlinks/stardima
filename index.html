@@ -131,12 +131,16 @@ button {
 
 
   <h2>stardima.co/.../{Filter server}</h2>
-  <textarea id="inputTextarea" rows="3" cols="150" placeholder="<!DOCTYPE html>"></textarea><br>
-  <button onclick="extractValueAttribute()">Filter iFrames</button><br><br>
+  <textarea id="inputTextarea" rows="8" cols="150" placeholder="<!DOCTYPE html>"></textarea><br>
+  <button onclick="extractAttributeValue()">Filter iFrames</button><br><br>
   <textarea id="outputTextarea" rows="9" cols="150" placeholder="https://strema.site/embed2/?id=https://vudeo.co/.../.html" readonly></textarea>
    <br>
    <button onclick="copyResult()">Copy</button>
    <button onclick="reset()">Reset</button><br><br>
+   <div class="top-arrow">
+   <button onclick="topFunction()" style="position: fixed; bottom: 20px; right: 30px;">⬆️</button><br>
+   </div>
+   <br>
   <script>
     function generateSource() {
             const urlInput = document.getElementById('url-input');
@@ -153,18 +157,23 @@ button {
             document.execCommand('copy');
         }
 
-    function extractValueAttribute() {
+     function extractAttributeValue() {
       const inputTextarea = document.getElementById('inputTextarea');
       const outputTextarea = document.getElementById('outputTextarea');
       const inputCode = inputTextarea.value;
 
-      // Regular expression to extract the value attribute from the input code
-      const valueAttributeRegex = /value='(https?:\/\/[^\s']+)'/g;
-      const matches = inputCode.match(valueAttributeRegex) || [];
+      // Regular expressions to extract the attribute value from the input code
+      const valueAttributeRegexDoubleQuotes = /value="([^"]+)"/g;
+      const valueAttributeRegexSingleQuotes = /value='([^']+)'/g;
+      const matchesDoubleQuotes = inputCode.match(valueAttributeRegexDoubleQuotes) || [];
+      const matchesSingleQuotes = inputCode.match(valueAttributeRegexSingleQuotes) || [];
 
-      // Get only the URL from the matches array and display it in the output textarea
-      const urls = matches.map(match => match.replace(/value='(.+)'/, '$1'));
-      outputTextarea.value = urls.join('\n');
+      // Combine and get the attribute values from both regular expressions
+      const combinedMatches = [...matchesDoubleQuotes, ...matchesSingleQuotes];
+      const attributeValues = combinedMatches.map(match => match.replace(/value=["']([^"']+)["']/, '$1'));
+
+      // Display the extracted attribute values in the output textarea
+      outputTextarea.value = attributeValues.join('\n');
     }
 
      function copyResult() {
@@ -181,8 +190,13 @@ button {
           document.getElementById("viewSourceUrl").value = "";
     }
 
+
+    // When the user clicks on the button, scroll to the top of the document
+      function topFunction() {
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+      }
   </script>
 </div>  
 </body>
 </html>
-
